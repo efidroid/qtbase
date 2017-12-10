@@ -665,7 +665,7 @@
         "shared": {
             "label": "Building shared libraries",
             "autoDetect": "!config.uikit",
-            "condition": "!config.integrity",
+            "condition": "!config.integrity && !config.uefi",
             "output": [
                 "shared",
                 "publicFeature",
@@ -823,7 +823,7 @@
         },
         "largefile": {
             "label": "Large file support",
-            "condition": "!config.android && !config.integrity && !config.winrt",
+            "condition": "!config.android && !config.integrity && !config.winrt && !config.uefi",
             "output": [
                 "privateConfig",
                 { "type": "define", "name": "QT_LARGEFILE_SUPPORT", "value": 64 }
@@ -1174,7 +1174,7 @@
         },
         "dbus": {
             "label": "Qt D-Bus",
-            "autoDetect": "!config.uikit && !config.android && !config.winrt",
+            "autoDetect": "!config.uikit && !config.android && !config.winrt && !config.uefi",
             "output": [ "privateFeature", "feature" ]
         },
         "dbus-linked": {
@@ -1206,7 +1206,8 @@
         },
         "network": {
             "label": "Qt Network",
-            "output": [ "privateFeature" ]
+            "output": [ "privateFeature" ],
+            "condition": "!config.uefi"
         },
         "sql": {
             "label": "Qt Sql",

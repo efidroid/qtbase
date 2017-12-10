@@ -7,7 +7,13 @@ CONFIG += static internal_module
 DEFINES += QT_NO_CAST_FROM_ASCII
 PRECOMPILED_HEADER = ../../corelib/global/qt_pch.h
 
-unix {
+uefi {
+    SOURCES += \
+        quefieventdispatcher.cpp
+
+    HEADERS += \
+        quefieventdispatcher_p.h
+} else:unix {
     SOURCES += \
         qunixeventdispatcher.cpp \
         qgenericunixeventdispatcher.cpp

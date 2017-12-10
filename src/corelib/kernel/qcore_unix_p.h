@@ -159,7 +159,6 @@ inline timeval timespecToTimeval(const timespec &ts)
     return tv;
 }
 
-
 inline void qt_ignore_sigpipe()
 {
     // Set to ignore SIGPIPE once only.
@@ -196,7 +195,7 @@ static inline int qt_safe_open(const char *pathname, int flags, mode_t mode = 07
 #undef QT_OPEN
 #define QT_OPEN         qt_safe_open
 
-#ifndef Q_OS_VXWORKS // no POSIX pipes in VxWorks
+#if !defined(Q_OS_VXWORKS) && !defined(Q_OS_UEFI) // no POSIX pipes in VxWorks
 // don't call ::pipe
 // call qt_safe_pipe
 static inline int qt_safe_pipe(int pipefd[2], int flags = 0)
@@ -358,6 +357,7 @@ inline bool qt_haveLinuxProcfs()
 #endif
 }
 
+#ifndef Q_OS_UEFI
 Q_CORE_EXPORT int qt_safe_poll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout_ts);
 
 static inline int qt_poll_msecs(struct pollfd *fds, nfds_t nfds, int timeout)
@@ -378,6 +378,7 @@ static inline struct pollfd qt_make_pollfd(int fd, short events)
     struct pollfd pfd = { fd, events, 0 };
     return pfd;
 }
+#endif
 
 // according to X/OPEN we have to define semun ourselves
 // we use prefix as on some systems sem.h will have it

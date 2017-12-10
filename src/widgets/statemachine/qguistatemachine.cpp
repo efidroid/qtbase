@@ -134,6 +134,8 @@ static QEvent *cloneEvent(QEvent *e)
         return new QEvent(*e);
     case QEvent::WinEventAct:
         return new QEvent(*e);
+    case QEvent::UefiEventAct:
+        return new QEvent(*e);
     case QEvent::DeferredDelete:
         return new QEvent(*e);
 #ifndef QT_NO_DRAGANDDROP

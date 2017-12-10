@@ -202,6 +202,8 @@
 #elif defined(__HAIKU__)
 #  define Q_OS_HAIKU
 #elif defined(__MAKEDEPEND__)
+#elif defined(__uefi__)
+#  define Q_OS_UEFI
 #else
 #  error "Qt has not been ported to this OS - see http://www.qt-project.org/"
 #endif

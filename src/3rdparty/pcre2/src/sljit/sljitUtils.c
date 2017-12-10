@@ -152,6 +152,10 @@ SLJIT_API_FUNC_ATTRIBUTE void SLJIT_CALL sljit_release_lock(void)
 
 #ifdef _WIN32
 #include "windows.h"
+#elif defined(__uefi__)
+#include <Base.h>
+#include <PiDxe.h>
+#include <Library/UefiBootServicesTableLib.h>
 #else
 /* Provides mmap function. */
 #include <sys/mman.h>
@@ -210,6 +214,10 @@ SLJIT_API_FUNC_ATTRIBUTE struct sljit_stack* SLJIT_CALL sljit_allocate_stack(slj
 #ifdef _WIN32
 	SYSTEM_INFO si;
 #endif
+#ifdef __uefi__
+	EFI_STATUS status;
+	EFI_PHYSICAL_ADDRESS  Memory;
+#endif
 
 	SLJIT_UNUSED_ARG(allocator_data);
 	if (limit > max_limit || limit < 1)
@@ -219,6 +227,10 @@ SLJIT_API_FUNC_ATTRIBUTE struct sljit_stack* SLJIT_CALL sljit_allocate_stack(slj
 	if (!sljit_page_align) {
 		GetSystemInfo(&si);
 		sljit_page_align = si.dwPageSize - 1;
+	}
+#elif defined(__uefi__)
+	if (!sljit_page_align) {
+		sljit_page_align = EFI_PAGE_SIZE - 1;
 	}
 #else
 	if (!sljit_page_align) {
@@ -250,6 +262,17 @@ SLJIT_API_FUNC_ATTRIBUTE struct sljit_stack* SLJIT_CALL sljit_allocate_stack(slj
 		sljit_free_stack(stack, allocator_data);
 		return NULL;
 	}
+#elif defined(__uefi__)
+	status = gST->BootServices->AllocatePages(AllocateAnyPages, EfiLoaderData, EFI_SIZE_TO_PAGES(max_limit), &Memory);
+	if (EFI_ERROR(status)) {
+		SLJIT_FREE(stack, allocator_data);
+		return NULL;
+	}
+	stack->max_limit = (sljit_u8 *)(UINTN) Memory;
+	stack->base = stack->max_limit + max_limit;
+	stack->limit = stack->base - limit;
+
+	memset(stack->max_limit, 0, max_limit);
 #else
 #ifdef MAP_ANON
 	ptr = mmap(NULL, max_limit, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
@@ -281,6 +304,8 @@ SLJIT_API_FUNC_ATTRIBUTE void SLJIT_CALL sljit_free_stack(struct sljit_stack *st
 	SLJIT_UNUSED_ARG(allocator_data);
 #ifdef _WIN32
 	VirtualFree((void*)stack->max_limit, 0, MEM_RELEASE);
+#elif defined(__uefi__)
+	gST->BootServices->FreePages((EFI_PHYSICAL_ADDRESS)(UINTN)stack->max_limit, EFI_SIZE_TO_PAGES(stack->base - stack->max_limit));
 #else
 	munmap((void*)stack->max_limit, stack->base - stack->max_limit);
 #endif

@@ -85,7 +85,7 @@
 #  include <sys/systeminfo.h>
 #endif
 
-#ifdef Q_OS_UNIX
+#if defined(Q_OS_UNIX) && !defined(Q_OS_UEFI)
 #include <sys/utsname.h>
 #include <private/qcore_unix_p.h>
 #endif
@@ -2509,6 +2509,8 @@ QString QSysInfo::currentCpuArchitecture()
 #elif defined(Q_OS_DARWIN) && !defined(Q_OS_MACOS)
     // iOS-based OSes do not return the architecture on uname(2)'s result.
     return buildCpuArchitecture();
+#elif defined(Q_OS_UEFI)
+    return buildCpuArchitecture();
 #elif defined(Q_OS_UNIX)
     long ret = -1;
     struct utsname u;
@@ -2646,7 +2648,7 @@ QString QSysInfo::kernelType()
 {
 #if defined(Q_OS_WIN)
     return QStringLiteral("winnt");
-#elif defined(Q_OS_UNIX)
+#elif defined(Q_OS_UNIX) && !defined(Q_OS_UEFI)
     struct utsname u;
     if (uname(&u) == 0)
         return QString::fromLatin1(u.sysname).toLower();
@@ -2674,9 +2676,11 @@ QString QSysInfo::kernelVersion()
     return QString::number(osver.majorVersion()) + QLatin1Char('.') + QString::number(osver.minorVersion())
             + QLatin1Char('.') + QString::number(osver.microVersion());
 #else
+#ifndef Q_OS_UEFI
     struct utsname u;
     if (uname(&u) == 0)
         return QString::fromLatin1(u.release);
+#endif
     return QString();
 #endif
 }
@@ -2853,7 +2857,7 @@ QString QSysInfo::prettyProductName()
             + QString::number(version.minorVersion());
 #elif defined(Q_OS_HAIKU)
     return QLatin1String("Haiku ") + productVersion();
-#elif defined(Q_OS_UNIX)
+#elif defined(Q_OS_UNIX) && !defined(Q_OS_UEFI)
 #  ifdef USE_ETC_OS_RELEASE
     QUnixOSVersion unixOsVersion;
     findUnixOsVersion(unixOsVersion);
@@ -2891,7 +2895,7 @@ QString QSysInfo::machineHostName()
     struct utsname u;
     if (uname(&u) == 0)
         return QString::fromLocal8Bit(u.nodename);
-#else
+#elif !defined(Q_OS_UEFI)
 #  ifdef Q_OS_WIN
     // Important: QtNetwork depends on machineHostName() initializing ws2_32.dll
     winsockInit();

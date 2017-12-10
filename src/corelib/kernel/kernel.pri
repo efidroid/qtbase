@@ -20,7 +20,6 @@ HEADERS += \
         kernel/qobjectdefs.h \
         kernel/qobjectdefs_impl.h \
         kernel/qsignalmapper.h \
-        kernel/qsocketnotifier.h \
         kernel/qtimer.h \
         kernel/qtranslator.h \
         kernel/qtranslator_p.h \
@@ -60,7 +59,6 @@ SOURCES += \
         kernel/qobject.cpp \
         kernel/qobjectcleanuphandler.cpp \
         kernel/qsignalmapper.cpp \
-        kernel/qsocketnotifier.cpp \
         kernel/qtimer.cpp \
         kernel/qtranslator.cpp \
         kernel/qvariant.cpp \
@@ -70,6 +68,20 @@ SOURCES += \
         kernel/qpointer.cpp \
         kernel/qmath.cpp \
         kernel/qsystemerror.cpp
+
+uefi {
+    SOURCES += \
+        kernel/quefieventnotifier.cpp
+
+    HEADERS += \
+        kernel/quefieventnotifier.h
+} else {
+    SOURCES += \
+        kernel/qsocketnotifier.cpp
+
+    HEADERS += \
+        kernel/qsocketnotifier.h
+}
 
 win32 {
         SOURCES += \
@@ -140,7 +152,7 @@ nacl {
         kernel/qfunctions_nacl.h
 }
 
-unix|integrity {
+!uefi:unix|integrity {
     SOURCES += \
             kernel/qcore_unix.cpp \
             kernel/qeventdispatcher_unix.cpp \
@@ -179,6 +191,21 @@ unix|integrity {
 
     # This is needed by QMetaType::typeName array implementation
     integrity: QMAKE_CXXFLAGS += --pending_instantiations=128
+}
+
+uefi {
+    SOURCES += \
+            kernel/qcore_unix.cpp \
+            kernel/qeventdispatcher_uefi.cpp \
+            kernel/qeventdispatcher_uefi_threads.cpp \
+            kernel/qtimerinfo_unix.cpp \
+            kernel/qelapsedtimer_unix.cpp
+
+    HEADERS += \
+            kernel/qcore_unix_p.h \
+            kernel/qeventdispatcher_uefi_p.h \
+            kernel/qeventdispatcher_uefi_threads_p.h \
+            kernel/qtimerinfo_unix_p.h
 }
 
 vxworks {

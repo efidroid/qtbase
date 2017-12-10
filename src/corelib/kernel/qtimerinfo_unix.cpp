@@ -64,7 +64,7 @@ Q_CORE_EXPORT bool qt_disable_lowpriority_timers=false;
 
 QTimerInfoList::QTimerInfoList()
 {
-#if (_POSIX_MONOTONIC_CLOCK-0 <= 0) && !defined(Q_OS_MAC) && !defined(Q_OS_NACL)
+#if (_POSIX_MONOTONIC_CLOCK-0 <= 0) && !defined(Q_OS_MAC) && !defined(Q_OS_NACL) && !defined(Q_OS_UEFI)
     if (!QElapsedTimer::isMonotonic()) {
         // not using monotonic timers, initialize the timeChanged() machinery
         previousTime = qt_gettime();
@@ -115,7 +115,7 @@ timespec qAbsTimespec(const timespec &t)
 */
 bool QTimerInfoList::timeChanged(timespec *delta)
 {
-#ifdef Q_OS_NACL
+#if defined(Q_OS_NACL) || defined(Q_OS_UEFI)
     Q_UNUSED(delta)
     return false; // Calling "times" crashes.
 #endif

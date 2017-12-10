@@ -883,7 +883,9 @@
 #      define Q_COMPILER_ALIGNAS
 #      define Q_COMPILER_ALIGNOF
 #      define Q_COMPILER_INHERITING_CONSTRUCTORS
-#      define Q_COMPILER_THREAD_LOCAL
+#      if !defined(__uefi__)
+#         define Q_COMPILER_THREAD_LOCAL
+#      endif
 #      if Q_CC_GNU > 408 || __GNUC_PATCHLEVEL__ >= 1
 #         define Q_COMPILER_REF_QUALIFIERS
 #      endif

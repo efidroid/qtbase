@@ -29,6 +29,7 @@
             "libjpeg": { "type": "enum", "values": [ "no", "qt", "system" ] },
             "libpng": { "type": "enum", "values": [ "no", "qt", "system" ] },
             "linuxfb": "boolean",
+            "uefigop": "boolean",
             "mirclient": "boolean",
             "mtdev": "boolean",
             "opengl": { "type": "optionalString", "values": [ "no", "yes", "desktop", "es2", "dynamic" ] },
@@ -992,10 +993,16 @@
             "condition": "tests.linuxfb && features.regularexpression",
             "output": [ "privateFeature" ]
         },
+        "uefigop": {
+            "label": "UEFI GOP",
+            "section": "Platform plugins",
+            "condition": "config.uefi",
+            "output": [ "privateFeature" ]
+        },
         "vnc": {
             "label": "VNC",
             "section": "Platform plugins",
-            "condition": "config.unix && !config.android && !config.darwin && features.regularexpression",
+            "condition": "config.unix && !config.android && !config.darwin && !config.uefi && features.regularexpression",
             "output": [ "privateFeature" ]
         },
         "mirclient": {
@@ -1511,7 +1518,7 @@ XKB configuration data. This is required for keyboard input support."
         },
         {
             "type": "warning",
-            "condition": "features.gui && config.linux && !config.android && !features.xcb && !features.eglfs && !features.directfb && !features.linuxfb && !features.mirclient",
+            "condition": "features.gui && config.linux && !config.android && !features.xcb && !features.eglfs && !features.directfb && !features.linuxfb && !features.mirclient && !features.uefigop",
             "message": "No QPA platform plugin enabled! This will
 produce a Qt that cannot run GUI applications.
 The dependencies needed for xcb to build are listed in
@@ -1531,7 +1538,7 @@ Specify -opengl desktop to use regular OpenGL."
         },
         {
             "type": "error",
-            "condition": "features.gui && !config.watchos && input.opengl != 'no' && !features.opengl-desktop && !features.opengles2 && !features.opengl-dynamic",
+            "condition": "features.gui && !config.watchos && !config.uefi && input.opengl != 'no' && !features.opengl-desktop && !features.opengles2 && !features.opengl-dynamic",
             "message": "The OpenGL functionality tests failed!
 You might need to modify the include and library search paths by editing QMAKE_INCDIR_OPENGL[_ES2],
 QMAKE_LIBDIR_OPENGL[_ES2] and QMAKE_LIBS_OPENGL[_ES2] in the mkspec for your platform."
@@ -1612,7 +1619,7 @@ QMAKE_LIBDIR_OPENGL[_ES2] and QMAKE_LIBS_OPENGL[_ES2] in the mkspec for your pla
                         "eglfs_viv", "eglfs_viv_wl", "eglfs_egldevice", "eglfs_gbm", "eglfs_mali", "eglfs_brcm", "egl_x11"
                     ]
                 },
-                "linuxfb", "vnc", "mirclient",
+                "linuxfb", "vnc", "mirclient", "uefigop",
                 {
                     "type": "feature",
                     "condition": "config.integrity",

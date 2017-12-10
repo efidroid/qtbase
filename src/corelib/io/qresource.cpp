@@ -956,7 +956,7 @@ public:
     }
 };
 
-#if defined(Q_OS_UNIX) && !defined (Q_OS_NACL) && !defined(Q_OS_INTEGRITY)
+#if defined(Q_OS_UNIX) && !defined (Q_OS_NACL) && !defined(Q_OS_INTEGRITY) && !defined(Q_OS_UEFI)
 #define QT_USE_MMAP
 #endif
 

@@ -102,6 +102,7 @@ public:
         MetaCall =  43,                         // meta call event
         SockAct = 50,                           // socket activation
         WinEventAct = 132,                      // win event activation
+        UefiEventAct = 133,                     // UEFI event activation
         DeferredDelete = 52,                    // deferred delete event
         DragEnter = 60,                         // drag moves into widget
         DragMove = 61,                          // drag moves in widget

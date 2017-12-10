@@ -144,7 +144,7 @@ win32 {
                 io/qlockfile_unix.cpp \
                 io/qfilesystemiterator_unix.cpp
 
-        !integrity:!uikit {
+        !integrity:!uikit:!uefi {
             SOURCES += io/forkfd_qt.cpp
             HEADERS += \
                      ../3rdparty/forkfd/forkfd.h
@@ -174,13 +174,17 @@ win32 {
                 io/qstandardpaths_haiku.cpp \
                 io/qstorageinfo_unix.cpp
             LIBS += -lbe
+        } else:uefi {
+            SOURCES += \
+                io/qstandardpaths_unix.cpp \
+                io/qstorageinfo_stub.cpp
         } else {
             SOURCES += \
                 io/qstandardpaths_unix.cpp \
                 io/qstorageinfo_unix.cpp
         }
 
-        linux|if(qnx:qtConfig(inotify)) {
+        !uefi:linux|if(qnx:qtConfig(inotify)) {
             SOURCES += io/qfilesystemwatcher_inotify.cpp
             HEADERS += io/qfilesystemwatcher_inotify_p.h
         }

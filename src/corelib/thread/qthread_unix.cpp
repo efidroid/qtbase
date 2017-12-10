@@ -53,7 +53,11 @@
 #  endif
 #endif
 
+#if defined(Q_OS_UEFI)
+#include <private/qeventdispatcher_uefi_threads_p.h>
+#else
 #include <private/qeventdispatcher_unix_p.h>
+#endif
 
 #include "qthreadstorage.h"
 
@@ -297,6 +301,8 @@ void QThreadPrivate::createEventDispatcher(QThreadData *data)
         data->eventDispatcher.storeRelease(new QEventDispatcherGlib);
     else
         data->eventDispatcher.storeRelease(new QEventDispatcherUNIX);
+#elif defined(Q_OS_UEFI)
+    data->eventDispatcher.storeRelease(new QEventDispatcherUEFIThreads);
 #else
     data->eventDispatcher.storeRelease(new QEventDispatcherUNIX);
 #endif
@@ -306,7 +312,7 @@ void QThreadPrivate::createEventDispatcher(QThreadData *data)
 
 #ifndef QT_NO_THREAD
 
-#if (defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_QNX))
+#if (defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_QNX) || defined(Q_OS_UEFI))
 static void setCurrentThreadName(pthread_t threadId, const char *name)
 {
 #  if defined(Q_OS_LINUX) && !defined(QT_LINUXBASE)
@@ -316,6 +322,8 @@ static void setCurrentThreadName(pthread_t threadId, const char *name)
     Q_UNUSED(threadId);
     pthread_setname_np(name);
 #  elif defined(Q_OS_QNX)
+    pthread_setname_np(threadId, name);
+#  elif defined(Q_OS_UEFI)
     pthread_setname_np(threadId, name);
 #  endif
 }
@@ -355,7 +363,7 @@ void *QThreadPrivate::start(void *arg)
         else
             createEventDispatcher(data);
 
-#if (defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_QNX))
+#if (defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_QNX) || defined(Q_OS_UEFI))
         {
             // sets the name of the current thread.
             QString objectName = thr->objectName();
@@ -517,6 +525,8 @@ int QThread::idealThreadCount() Q_DECL_NOTHROW
     // as of aug 2008 VxWorks < 6.6 only supports one single core CPU
     cores = 1;
 #  endif
+#elif defined(Q_OS_UEFI)
+    cores = 1;
 #else
     // the rest: Linux, Solaris, AIX, Tru64
     cores = (int)sysconf(_SC_NPROCESSORS_ONLN);

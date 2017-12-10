@@ -97,7 +97,23 @@ static SLJIT_INLINE void free_chunk(void *chunk, sljit_uw size)
 static SLJIT_INLINE void* alloc_chunk(sljit_uw size)
 {
 	void *retval;
+#ifdef __uefi__
+	EFI_STATUS status;
+	EFI_PHYSICAL_ADDRESS  Memory;
+#endif
 
+#ifdef __uefi__
+	status = gST->BootServices->AllocatePages(AllocateAnyPages, EfiLoaderCode, EFI_SIZE_TO_PAGES(size), &Memory);
+	if (EFI_ERROR(status)) {
+		return NULL;
+	}
+
+	retval = (VOID*)(UINTN) Memory;
+	memset(retval, 0, size);
+
+	return retval;
+
+#else
 #ifdef MAP_ANON
 	retval = mmap(NULL, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0);
 #else
@@ -109,11 +125,16 @@ static SLJIT_INLINE void* alloc_chunk(sljit_uw size)
 #endif
 
 	return (retval != MAP_FAILED) ? retval : NULL;
+#endif
 }
 
 static SLJIT_INLINE void free_chunk(void *chunk, sljit_uw size)
 {
+#ifdef __uefi__
+	gST->BootServices->FreePages((EFI_PHYSICAL_ADDRESS)(UINTN) chunk, EFI_SIZE_TO_PAGES(size));
+#else
 	munmap(chunk, size);
+#endif
 }
 
 #endif

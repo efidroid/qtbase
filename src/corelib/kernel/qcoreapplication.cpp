@@ -71,7 +71,9 @@
 #include <private/qhooks_p.h>
 
 #ifndef QT_NO_QOBJECT
-#if defined(Q_OS_UNIX)
+#if defined(Q_OS_UEFI)
+# include "qeventdispatcher_uefi_p.h"
+#elif defined(Q_OS_UNIX)
 # if defined(Q_OS_DARWIN)
 #  include "qeventdispatcher_cf_p.h"
 # else
@@ -532,7 +534,9 @@ void QCoreApplicationPrivate::cleanupThreadData()
 void QCoreApplicationPrivate::createEventDispatcher()
 {
     Q_Q(QCoreApplication);
-#if defined(Q_OS_UNIX)
+#if defined(Q_OS_UEFI)
+    eventDispatcher = new QEventDispatcherUEFI(q);
+#elif defined(Q_OS_UNIX)
 #  if defined(Q_OS_DARWIN)
     bool ok = false;
     int value = qEnvironmentVariableIntValue("QT_EVENT_DISPATCHER_CORE_FOUNDATION", &ok);

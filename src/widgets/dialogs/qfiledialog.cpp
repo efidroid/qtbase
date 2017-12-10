@@ -1104,7 +1104,7 @@ Q_AUTOTEST_EXPORT QString qt_tildeExpansion(const QString &path)
     if (separatorPosition == 1) {
         return QDir::homePath() + path.midRef(1);
     } else {
-#if defined(Q_OS_VXWORKS) || defined(Q_OS_INTEGRITY)
+#if defined(Q_OS_VXWORKS) || defined(Q_OS_INTEGRITY) || defined(Q_OS_UEFI)
         const QString homePath = QDir::homePath();
 #else
         const QByteArray userName = path.midRef(1, separatorPosition - 1).toLocal8Bit();
@@ -1770,7 +1770,7 @@ QLineEdit *QFileDialogPrivate::lineEdit() const {
 
 int QFileDialogPrivate::maxNameLength(const QString &path)
 {
-#if defined(Q_OS_UNIX)
+#if defined(Q_OS_UNIX) && !defined(Q_OS_UEFI)
     return ::pathconf(QFile::encodeName(path).data(), _PC_NAME_MAX);
 #elif defined(Q_OS_WINRT)
     Q_UNUSED(path);

@@ -57,7 +57,7 @@ SOURCES += \
     $$PWD/src/type42/type42.c \
     $$PWD/src/winfonts/winfnt.c
 
-win32 {
+win32|uefi {
     SOURCES += $$PWD/src/base/ftsystem.c
 } else {
     SOURCES += $$PWD/builds/unix/ftsystem.c

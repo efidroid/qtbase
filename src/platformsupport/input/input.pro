@@ -32,4 +32,8 @@ qtConfig(integrityhid) {
     include($$PWD/integrityhid/integrityhid.pri)
 }
 
+qtConfig(uefigop) {
+    include($$PWD/uefiinput/uefiinput.pri)
+}
+
 load(qt_module)

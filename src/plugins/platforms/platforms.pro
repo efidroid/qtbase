@@ -49,3 +49,5 @@ haiku {
 qtConfig(mirclient): SUBDIRS += mirclient
 
 qtConfig(integrityfb): SUBDIRS += integrity
+
+qtConfig(uefigop): SUBDIRS += uefigop

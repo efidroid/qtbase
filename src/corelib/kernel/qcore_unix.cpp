@@ -80,6 +80,7 @@ QByteArray qt_readlink(const char *path)
 }
 
 #ifndef QT_BOOTSTRAPPED
+#ifndef Q_OS_UEFI
 
 #if QT_CONFIG(poll_pollts)
 #  define ppoll pollts
@@ -152,6 +153,7 @@ int qt_safe_poll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout
     }
 }
 
+#endif // Q_OS_UEFI
 #endif // QT_BOOTSTRAPPED
 
 QT_END_NAMESPACE

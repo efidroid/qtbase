@@ -53,6 +53,10 @@ class QSocketNotifier;
 class QWinEventNotifier;
 #endif
 
+#ifdef Q_OS_UEFI
+class QUefiEventNotifier;
+#endif
+
 class Q_CORE_EXPORT QAbstractEventDispatcher : public QObject
 {
     Q_OBJECT
@@ -78,8 +82,10 @@ public:
     virtual bool processEvents(QEventLoop::ProcessEventsFlags flags) = 0;
     virtual bool hasPendingEvents() = 0; // ### Qt6: remove, mark final or make protected
 
+#if !defined(Q_OS_UEFI)
     virtual void registerSocketNotifier(QSocketNotifier *notifier) = 0;
     virtual void unregisterSocketNotifier(QSocketNotifier *notifier) = 0;
+#endif
 
 #if QT_DEPRECATED_SINCE(5,0)
     QT_DEPRECATED inline int registerTimer(int interval, QObject *object)
@@ -98,6 +104,11 @@ public:
 #if defined(Q_OS_WIN) || defined(Q_QDOC)
     virtual bool registerEventNotifier(QWinEventNotifier *notifier) = 0;
     virtual void unregisterEventNotifier(QWinEventNotifier *notifier) = 0;
+#endif
+
+#if defined(Q_OS_UEFI)
+    virtual bool registerEventNotifier(QUefiEventNotifier *notifier) = 0;
+    virtual void unregisterEventNotifier(QUefiEventNotifier *notifier) = 0;
 #endif
 
     virtual void wakeUp() = 0;

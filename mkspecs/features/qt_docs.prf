@@ -64,8 +64,8 @@ DOC_INDEXES =
         DOC_INDEXES += -indexdir $$shell_quote($$qrep/doc)
 } else {
     prepare_docs: \
-        PREP_DOC_INDEXES += -indexdir $$shell_quote($$[QT_INSTALL_DOCS/get])
-    DOC_INDEXES += -indexdir $$shell_quote($$[QT_INSTALL_DOCS/get])
+        PREP_DOC_INDEXES += -indexdir $$shell_quote($$[QT_INSTALL_DOCS])
+    DOC_INDEXES += -indexdir $$shell_quote($$[QT_INSTALL_DOCS])
 }
 
 qtattributionsscanner.target = qtattributionsscanner

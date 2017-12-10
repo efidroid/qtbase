@@ -1,10 +1,10 @@
 
 qt_depends = $$resolve_depends(QT, "QT.")
 !watchos:equals(TEMPLATE, app):contains(qt_depends, gui(-private)?) {
-    LIBS *= -L$$[QT_INSTALL_PLUGINS/get]/platforms
+    LIBS *= -L$$[QT_INSTALL_PLUGINS]/platforms
 
     lib_name = qios
-    lib_path_and_base = $$[QT_INSTALL_PLUGINS/get]/platforms/lib$${lib_name}$$qtPlatformTargetSuffix()
+    lib_path_and_base = $$[QT_INSTALL_PLUGINS]/platforms/lib$${lib_name}$$qtPlatformTargetSuffix()
     LIBS += -l$${lib_name}$$qtPlatformTargetSuffix() $$fromfile($${lib_path_and_base}.prl, QMAKE_PRL_LIBS)
 
     !bitcode {

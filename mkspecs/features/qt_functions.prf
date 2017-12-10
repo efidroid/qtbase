@@ -216,7 +216,7 @@ defineTest(qtAddTargetEnv) {
         deppath.value = $$unique(deppath)
 
         pluginpath.value =
-        ppaths = $$[QT_INSTALL_PLUGINS/get]
+        ppaths = $$[QT_INSTALL_PLUGINS]
         for(qplug, QT_PLUGINS): \
             contains(ptypes, $$eval(QT_PLUGIN.$${qplug}.TYPE)): \
                 ppaths += $$eval(QT_PLUGIN.$${qplug}.PATH)
